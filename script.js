@@ -1,5 +1,3 @@
-var parsedArray = []
-
 function Idea(titleInput, bodyInput){
   this.title = titleInput
   this.body = bodyInput
@@ -30,19 +28,28 @@ function stringifyIdea(idea) {
   localStorage.setItem(idea.id, JSON.stringify(idea));
 }
 
-function changeRating (idea, thisVal) {
+function getParentId() {
+  return JSON.parse(localStorage.getItem($(this).parent().attr("id")))
+}
+
+function changeRating () {
+  var idea = getParentId.call(this)
+  var thisIdea = $(this).siblings('.quality')
+  if ($(this).hasClass('up-vote-btn')) {
+    idea.count += 1;
+  } else {
+    idea.count -= 1;
+  }
   if (idea.count <= 0) {
     idea.quality = "swill"
-    thisVal.text('quality: swill')
+    thisIdea.text('quality: swill')
     idea.count = 0;
-  }
-  else if (idea.count === 1) {
+  } else if (idea.count === 1) {
     idea.quality = "plausible"
-    thisVal.text('quality: plausible')
-
+    thisIdea.text('quality: plausible')
   } else if (idea.count >= 2) {
     idea.quality = "genius"
-    thisVal.text("quality: genius")
+    thisIdea.text("quality: genius")
     idea.count = 2;
   }
   stringifyIdea(idea);
@@ -50,10 +57,7 @@ function changeRating (idea, thisVal) {
 
 $(document).ready(function() {
   for(var i =0; i < localStorage.length; i++){
-    parsedArray.push(JSON.parse(localStorage.getItem(localStorage.key(i))));
-  }
-  for(var i=0; i< parsedArray.length; i++){
-      prepend(parsedArray[i]);
+    prepend(JSON.parse(localStorage.getItem(localStorage.key(i))));
   }
 })
 
@@ -74,7 +78,6 @@ $('.search-input').on('keyup', function(){
   var searchVal = $('.search-input').val()
   $.each($('.idea-article'), function(index, articleElement) {
     if ($(articleElement).children('.title').val().indexOf(searchVal) < 0) {
-      console.log($(articleElement).children('.title').val());
       $(articleElement).hide()
     } else {
       $(articleElement).show()
@@ -83,32 +86,21 @@ $('.search-input').on('keyup', function(){
 })
 
 $('.idea-storage-list').on('click', '.up-vote-btn', function(){
-  var id = $(this).parent().attr("id")
-  var idea = JSON.parse(localStorage.getItem(id))
-  var thisIdea = $(this).siblings('.quality')
-  idea.count += 1;
-  changeRating(idea, thisIdea)
+  changeRating.call(this)
 })
 
 $('.idea-storage-list').on('click', '.down-vote-btn', function(){
-  var id = $(this).parent().attr("id")
-  var idea = JSON.parse(localStorage.getItem(id))
-  var thisIdea = $(this).siblings('.quality')
-  idea.count -= 1;
-  changeRating(idea, thisIdea)
+  changeRating.call(this)
 })
 
 $('.idea-storage-list').on('blur', '.title', function() {
-  var id = $(this).parent().attr("id")
-  var idea = JSON.parse(localStorage.getItem(id))
+  var idea = getParentId.call(this)
   idea.title = $(this).val()
   stringifyIdea(idea);
 })
 
 $('.idea-storage-list').on('blur', '.body', function() {
-  var id = $(this).parent().attr("id")
-  var idea = JSON.parse(localStorage.getItem(id))
-  idea.body = $(this).val()
+  var idea = getParentId.call(this)
+  getParentId.call(this).body = $(this).val()
   stringifyIdea(idea);
-
 })
