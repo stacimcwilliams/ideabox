@@ -73,12 +73,15 @@ $('.idea-storage-list').on('click', '.delete-btn', function(){
 $('.search-input').on('keyup', function(){
   var searchVal = $('.search-input').val()
   $.each($('.idea-article'), function(index, articleElement) {
-    if ($(articleElement).children("h2").text().indexOf(searchVal) < 0) {
-      console.log($(articleElement).children("h2").text());
+    if ($(articleElement).children(".title").val().indexOf(searchVal) < 0) {
+      console.log($(articleElement).children(".title").val());
       $(articleElement).hide()
+    } else {
+        $(articleElement).show()
     }
   })
 })
+
 
 $('.idea-storage-list').on('click', '.up-vote-btn', function(){
   var id = $(this).parent().attr("id")
